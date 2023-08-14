@@ -57,7 +57,7 @@ app.post('/create-short-link', (req, res) => {
     const shortLink = generateRandomValue()
     console.log(shortLink)
 
-    linkModel.create(
+    linkModel.create(            // Write into database
         {
             mainLink: req.body.mainLink,
             shortLink: shortLink
@@ -67,16 +67,60 @@ app.post('/create-short-link', (req, res) => {
     res.send('Okay..Link shorted')
 })
 
+
 app.post('/delete-link', (req, res) => {
     console.log(req.body.toBeDeletedLink)
 
+    linkModel.destroy(           // Delete from database
+        {
+            where: {
+                mainLink: req.body.toBeDeletedLink
+                // id: 22
+            }
+        }
+    )
+
     res.send('Okay..Your Link is Deleted')
-    // linkModel.create(
+})
+
+
+
+
+// async and await are features in JS that make it easier to work with asynchronous code in a more synchronous and readable manner.
+// They are often used when dealing with operations that take time to complete, such as network requests, file reading/writing, and database queries.
+// The use of async and await doesn't necessarily eliminate all callbacks or promises, but makes their handling and sequencing more straightforward.
+
+app.get('/show-all-links', async (req, res) => {
+    const linksList = await linkModel.findAll()       // Shows all from the table
+
+    // const linksList = await linkModel.findAll(            //The await keyword can only be used inside an async function.
     //     {
-    //         mainLink: req.body.mainLink,
-    //         shortLink: shortLink
+    //         attributes: ['mainLink', 'shortLink']     // Only mainLink and shortLink will be shown
+    //         // attributes: { exclude: ['createdAt'] }        // Show all contents of table excluding createdAt
     //     }
     // )
+    res.send(linksList)
+})
+
+app.get('/search-a-link', async (req, res) => {
+    const linksList = await linkModel.findOne(
+        {
+            where: { mainLink: 'www.google.com' }         // Even if we have two mainLink of www.google.com, it will show only the first
+        }
+    )
+    console.log(linksList)
+    res.send(linksList)
+})
+
+
+app.get('/search-by-pk', async (req, res) => {
+    const linksList = await linkModel.findByPk(
+        {
+            where: { id: '26' }         // Search by Primary Key(PK)
+        }
+    )
+    console.log(linksList)
+    res.send(linksList)
 })
 
 
@@ -108,15 +152,15 @@ app.post('/delete-link', (req, res) => {
 //Here starts example
 
 
-const linkList = []
+// const linkList = []
 
-app.post('/create-link', (req, res) => {
-    console.log(req.body)
-    const shortLink = generateRandomValue()
-    linkList.push({ link: req.body.link, shortLink: shortLink })
-    console.log(linkList)
-    res.send(shortLink)
-})
+// app.post('/create-link', (req, res) => {
+//     console.log(req.body)
+//     const shortLink = generateRandomValue()
+//     linkList.push({ link: req.body.link, shortLink: shortLink })
+//     console.log(linkList)
+//     res.send(shortLink)
+// })
 
 
 
