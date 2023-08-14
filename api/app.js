@@ -42,7 +42,8 @@ db.authenticate()
     .catch(err => console.log('Error: ' + err))
 
 
-const linkModel = require('./Link-model')
+const linkModel = require('./Link-model');
+const { where } = require('sequelize');
 
 // app.get('/', (req, res) => {
 //     const data = {
@@ -102,6 +103,7 @@ app.get('/show-all-links', async (req, res) => {
     res.send(linksList)
 })
 
+
 app.get('/search-a-link', async (req, res) => {
     const linksList = await linkModel.findOne(
         {
@@ -113,12 +115,19 @@ app.get('/search-a-link', async (req, res) => {
 })
 
 
-app.get('/search-by-pk', async (req, res) => {
-    const linksList = await linkModel.findByPk(
-        {
-            where: { id: '26' }         // Search by Primary Key(PK)
-        }
+app.post('/update-shortlink', async (req, res) => {
+    const linkToBeChange = req.body.mainLink
+    const newShortLink = generateRandomValue()
+
+    linkModel.update(
+        { shortLink: newShortLink }, { where: { mainLink: linkToBeChange } }
     )
+    res.send("Your Link: " + linkToBeChange + " is updated")
+})
+
+
+app.get('/search-by-pk', async (req, res) => {
+    const linksList = await linkModel.findByPk(26)      // Search by Primary Key(PK)
     console.log(linksList)
     res.send(linksList)
 })
